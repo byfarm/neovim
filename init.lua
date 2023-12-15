@@ -73,6 +73,7 @@ require('lazy').setup({
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
+  'tpope/vim-surround',
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -83,14 +84,29 @@ require('lazy').setup({
       -- Automatically install LSPs to stdpath for neovim
       { 'williamboman/mason.nvim', config = true },
       'williamboman/mason-lspconfig.nvim',
+      "hrsh7th/nvim-cmp",
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
     },
+    config = function()
+            require("lspconfig")["matlab_ls"].setup {
+                settings = {
+                    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+                    matlab = {
+                        indexWorkspace = true,
+                        installPath = "/mnt/c/Program Files/MATLAB/R2023a",
+                        matlabConnectionTiming = "onStart",
+                        telemetry = true,
+                    },
+                },
+              single_file_support = true,
+            }
+        end,
   },
 
   {
@@ -109,10 +125,14 @@ require('lazy').setup({
     },
   },
   { "mfussenegger/nvim-dap" },
-  -- autoclose brackets 
-  { 'm4xshen/autoclose.nvim'},
+  -- autoclose brackets
+  { 'm4xshen/autoclose.nvim' },
+  { 'nvim-treesitter/nvim-treesitter-context' },
+  { "ldelossa/nvim-dap-projects" },
+  { "junegunn/goyo.vim" },
+  { "christoomey/vim-tmux-navigator" },
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -126,7 +146,8 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
+          { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
         vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
         vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
       end,
@@ -158,13 +179,13 @@ require('lazy').setup({
 
   {
     -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
+    -- 'lukas-reineke/indent-blankline.nvim', main = "ibl",
+    -- Enable `lukas-reineke/indent-blankline.nvim`,
     -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
+    -- opts = {
+      -- char = '┊',
+      -- show_trailing_blankline_indent = false,
+    -- },
   },
 
   -- "gc" to comment visual regions/lines
@@ -203,8 +224,10 @@ require('lazy').setup({
   -- long    numbytesNOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
+  --require 'kickstart.plugins.autoformat',
+  require 'kickstart.plugins.debug',
+  --require 'custom.lang.matlab'
+  --require 'custom.plugins.debug_adapter',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -228,6 +251,7 @@ vim.o.hlsearch = false
 -- Make line numbers default
 vim.wo.number = true
 vim.wo.relativenumber = true
+vim.opt.colorcolumn = "79"
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -319,7 +343,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim', 'matlab' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -415,8 +439,8 @@ local on_attach = function(_, bufnr)
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
   -- See `:help K` for why this keymap
-  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('T', vim.lsp.buf.hover, 'Hover Documentation')
+  nmap('<leader><C-t>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -443,7 +467,8 @@ end
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  pyright = {},
+  matlab_ls = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
@@ -467,7 +492,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
+  ensure_installed = vim.tbl_keys(servers)
 }
 
 mason_lspconfig.setup_handlers {
@@ -527,37 +552,44 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
   },
+  {
+    "ray-x/lsp_signature.nvim",
+    event = "VeryLazy",
+    opts = {},
+    config = function(_, opts) require'lsp_signature'.setup(opts) end
+  },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
 --
--- 
+--
 --
 -- ------------ user added packages -----------------------
-require("autoclose").setup({keys = {
-      ["("] = { escape = false, close = true, pair = "()" },
-      ["["] = { escape = false, close = true, pair = "[]" },
-      ["{"] = { escape = false, close = true, pair = "{}" },
+require("autoclose").setup({
+  keys = {
+    ["("] = { escape = false, close = true, pair = "()" },
+    ["["] = { escape = false, close = true, pair = "[]" },
+    ["{"] = { escape = false, close = true, pair = "{}" },
 
-      [">"] = { escape = true, close = false, pair = "<>" },
-      [")"] = { escape = true, close = false, pair = "()" },
-      ["]"] = { escape = true, close = false, pair = "[]" },
-      ["}"] = { escape = true, close = false, pair = "{}" },
+    [">"] = { escape = true, close = false, pair = "<>" },
+    [")"] = { escape = true, close = false, pair = "()" },
+    ["]"] = { escape = true, close = false, pair = "[]" },
+    ["}"] = { escape = true, close = false, pair = "{}" },
 
-      ['"'] = { escape = true, close = true, pair = '""' },
-      ["'"] = { escape = true, close = true, pair = "''" },
-      ["`"] = { escape = true, close = true, pair = "``" },
-   },
-   options = {
-      disabled_filetypes = { "text" },
-      disable_when_touch = true,
-      touch_regex = "[%w(%[{]",
-      pair_spaces = true,
-      auto_indent = true,
-   },})
+    ['"'] = { escape = true, close = true, pair = '""' },
+    ["'"] = { escape = true, close = true, pair = "''" },
+    ["`"] = { escape = true, close = true, pair = "``" },
+  },
+  options = {
+    disabled_filetypes = { "text" },
+    disable_when_touch = true,
+    touch_regex = "[%w(%[{]",
+    pair_spaces = true,
+    auto_indent = true,
+  },
+})
+vim.cmd('source ~/.config/nvim/lua/custom/plugins/goyo.vim')
 
-
-
-
+-- vim.lsp.set_log_level("debug")

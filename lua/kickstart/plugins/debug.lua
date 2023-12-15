@@ -7,6 +7,7 @@
 -- kickstart.nvim and not kitchen-sink.nvim ;)
 
 return {
+
   -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
   -- NOTE: And you can specify dependencies as well
@@ -26,6 +27,29 @@ return {
     local dap = require 'dap'
     local dapui = require 'dapui'
 
+    -- dap.adapters.python = {
+    --   type = "excecutable",
+    --   command = 'poetry',
+    --   args = { 'run', 'python3', '-m', 'debugpy.adapter' }
+    -- }
+    -- dap.configurations.python = {
+    --   type = 'python',
+    --   request = 'launch',
+    --   name = "Launch file",
+    --   program = "${file}"
+    -- }
+      dap.adapters.codelldb = {
+  type = 'server',
+  port = "${port}",
+  executable = {
+    -- CHANGE THIS to your path!
+    command = '~/.local/share/nvim/mason/packages/codelldb/extension/adapter/codelldb',
+    args = {"--port", "${port}"},
+
+    -- On windows you may have to uncomment this:
+  detached = false,
+  }
+}
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
       -- reasonable debug configurations
@@ -39,13 +63,12 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
-        'python'
+        'python',
+        'codelldb'
       },
     }
     vim.keymap.set('n', '<F5>', function()
       dap.continue()
-      vim.cmd.Neotree('toggle') -- this will toggle the Neo tree during debugging
     end)
     vim.keymap.set('n', '<F11>', dap.step_into)
     vim.keymap.set('n', '<F10>', dap.step_over)
@@ -96,6 +119,9 @@ return {
 
     -- Install golang specific config
     require('dap-go').setup()
-    require('dap-python').setup() 
+    require('dap-python').setup('~/.virtualenvs/python310/bin/python')
+    -- require('dap-python').setup("/home/bucks/.cache/pypoetry/virtualenvs/scrapers-xlDQeP5F-py3.10/bin/python3")
+
+
   end 
 }
