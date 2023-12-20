@@ -61,6 +61,9 @@ require('lazy').setup({
 
     { 'nvim-tree/nvim-tree.lua', 'nvim-tree/nvim-web-devicons' }, -- file tree
 
+    -- indent tracker
+    { "lukas-reineke/indent-blankline.nvim", main = "ibl" },
+
     require 'plugins.lsp', -- call lsp setup
     require 'plugins.autocomplete', -- call autocompletion
     require 'plugins.telescope', -- fuzy finder
@@ -133,6 +136,7 @@ require 'configure.treesitter'
 require 'configure.lsp'
 require 'configure.autocomplete'
 require 'configure.trees'
+require 'configure.indent'
 
 -- =========================== OPTIONS =====================
 -- tabs
