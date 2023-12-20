@@ -38,7 +38,12 @@ end
 local servers = {
   clangd = {},
   pyright = {},
-  matlab_ls = {},
+  matlab_ls = {
+    indexWorkspace = true,
+    installPath = "/mnt/c/Program Files/MATLAB/R2023b",
+    matlabConnectionTiming = "onStart",
+    telemetry = true,
+  },
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -64,13 +69,14 @@ return {
     },
 
     mason_lspconfig.setup_handlers {
-      function(server_name)
-        require('lspconfig')[server_name].setup {
-          capabilities = capabilities,
-          on_attach = on_attach,
-          settings = servers[server_name],
-          filetypes = (servers[server_name] or {}).filetypes,
-        }
-      end
-    }
+        function(server_name)
+            require('lspconfig')[server_name].setup {
+                capabilities = capabilities,
+                on_attach = on_attach,
+                settings = servers[server_name],
+                filetypes = (servers[server_name] or {}).filetypes,
+            }
+        end
+    },
+
 }

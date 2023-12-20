@@ -6,5 +6,8 @@ return {
 	"hrsh7th/nvim-cmp", -- auto completion
 	{ 'j-hui/fidget.nvim', tag = 'legacy', opts = {} }, -- progress message
 	'folke/neodev.nvim', -- plugin signature help
-    }
+    },
 }
+
+
+

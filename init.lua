@@ -55,6 +55,12 @@ require('lazy').setup({
 
     --{ 'folke/which-key.nvim',  opts = {} }, -- show keybinds
 
+    'Bekaboo/deadcolumn.nvim', -- 80 textline limit
+
+    'simrat39/symbols-outline.nvim', -- symbols outline
+
+    { 'nvim-tree/nvim-tree.lua', 'nvim-tree/nvim-web-devicons' }, -- file tree
+
     require 'plugins.lsp', -- call lsp setup
     require 'plugins.autocomplete', -- call autocompletion
     require 'plugins.telescope', -- fuzy finder
@@ -64,7 +70,7 @@ require('lazy').setup({
 
 -- ===================== Setup Plugins ==============================
 require("autoclose").setup({
-  keys = {
+  seys = {
     ["("] = { escape = false, close = true, pair = "()" },
     ["["] = { escape = false, close = true, pair = "[]" },
     ["{"] = { escape = false, close = true, pair = "{}" },
@@ -118,13 +124,15 @@ require("telescope").setup {
     },
 }
 
+
 pcall(require('telescope').load_extension, 'fzf')
 
-vim.cmd('source ~/.config/nvim/configure/goyo.vim')
+vim.cmd('source ~/.config/nvim/lua/configure/goyo.vim')
 require 'configure.telescope'
 require 'configure.treesitter'
 require 'configure.lsp'
 require 'configure.autocomplete'
+require 'configure.trees'
 
 -- =========================== OPTIONS =====================
 -- tabs
@@ -158,3 +166,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     group = highlight_group,
     pattern = '*',
 })
+
+
+-- vim.lsp.set_log_level("debug")
