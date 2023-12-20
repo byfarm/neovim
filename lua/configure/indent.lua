@@ -24,13 +24,23 @@ end)
 return {
     require("ibl").setup{
         indent = {
-            char = "|",
+            char = "║",
             highlight = highlight,
         },
         scope = {
             enabled = true,
             show_start = true,
             show_end = true,
+            include = {
+                node_type = {
+                    python = {
+                        "for_statement",
+                        "if_statement",
+                        "try_statement",
+                        "class",
+                    },
+                }
+            }
         }
   }
 }
