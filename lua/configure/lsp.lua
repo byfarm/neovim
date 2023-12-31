@@ -36,11 +36,16 @@ end
 
 -- enable automatic language servers
 local servers = {
-  clangd = {},
+  clangd = {
+    cmd = {
+      "clangd",
+      "--offset-encoding=utf-16",
+    },
+  },
   pyright = {},
   matlab_ls = {
     indexWorkspace = true,
-    installPath = "/mnt/c/Program Files/MATLAB/R2023b",
+    installPath = "C:\\Program Files\\MATLAB\\R2023b",
     matlabConnectionTiming = "onStart",
     telemetry = true,
   },

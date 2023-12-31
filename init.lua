@@ -53,7 +53,8 @@ require('lazy').setup({
     -- comment blocks
     { 'numToStr/Comment.nvim', opts = {} },
 
-    --{ 'folke/which-key.nvim',  opts = {} }, -- show keybinds
+    -- show keybinds
+    { 'folke/which-key.nvim',  opts = {} },
 
     'Bekaboo/deadcolumn.nvim', -- 80 textline limit
 
@@ -64,10 +65,17 @@ require('lazy').setup({
     -- indent tracker
     { "lukas-reineke/indent-blankline.nvim", main = "ibl" },
 
+    -- "github/copilot.vim",
+
+    "RRethy/vim-illuminate", -- common word highlighting
+
+    "wfxr/minimap.vim", -- minimap
+
     require 'plugins.lsp', -- call lsp setup
     require 'plugins.autocomplete', -- call autocompletion
     require 'plugins.telescope', -- fuzy finder
     require 'plugins.treesitter', -- tree sitter for highlighting
+    require 'plugins.dap' -- debugger
 })
 
 
@@ -126,9 +134,10 @@ require("telescope").setup {
 	},
     },
 }
-
+require("deadcolumn").setup{}
 
 pcall(require('telescope').load_extension, 'fzf')
+
 
 vim.cmd('source ~/.config/nvim/lua/configure/goyo.vim')
 require 'configure.telescope'
@@ -137,6 +146,7 @@ require 'configure.lsp'
 require 'configure.autocomplete'
 require 'configure.trees'
 require 'configure.indent'
+require 'configure.illuminate'
 
 -- =========================== OPTIONS =====================
 -- tabs
@@ -171,5 +181,24 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     pattern = '*',
 })
 
+-- ============================== GLOBAL KEYBINDS ============================
+local opts = { noremap = true, silent = true }
+
+-- set so in terminal mode you can use cntl hjkl keybiinde
+vim.keymap.set("t", "<C-h>", "<C-\\><C-N><C-w>h")
+vim.keymap.set("t", "<C-j>", "<C-\\><C-N><C-w>j")
+vim.keymap.set("t", "<C-k>", "<C-\\><C-N><C-w>k")
+vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l")
+-- vim.api.nvim_set_keymap("t", "<C-h>", "<C-\\><C-N><C-h>", opts)
+-- vim.api.nvim_set_keymap("t", "<C-j>", "<C-\\><C-N><C-j>", opts)
+-- vim.api.nvim_set_keymap("t", "<C-k>", "<C-\\><C-N><C-k>", opts)
+-- vim.api.nvim_set_keymap("t", "<C-l>", "<C-\\><C-N><C-l>", opts)
+
+vim.keymap.set("t", "<C-e>", "<C-\\><C-N>") --exit term mode
+
+-- an auto terminal opener
+vim.keymap.set("n", '<S-F3>', ':vs<Enter><C-w>l:term<Enter>i')
+vim.keymap.set("n", '<S-F4>', ':MinimapToggle<Enter>')
 
 -- vim.lsp.set_log_level("debug")
+
